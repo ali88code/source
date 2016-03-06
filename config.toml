@@ -1,6 +1,6 @@
-baseurl = "http://ali88code.github.io/"
+baseurl = "http://notepage.ali88.idv.tw/"
 languageCode = "en-us"
 title = "My Name is ali88.It is my Hugo Host First."
 theme = "crisp"
 author = "Ali88 Cheng"
-publishdir="/var/www/html/ali88code.github.io"
+publishdir="/var/www/html/notepage"
