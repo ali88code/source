@@ -38,6 +38,102 @@ Nginx 除了 work Process 管理 Http Request 請求等其他工作外,Nginx Cac
 
 # Nginx Fastcgi Cache 簡要參數說明 #
 
+```
+http{
+....
+fastcgi_cache_path /dev/shm/fastcgicache levels=1:2 keys_zone=democache:10m  max_size=1000m inactive=60s;
+server {
+...
+	location ~  ^/other_sport/A0017_0050/(.*) {
+		access_log /var/log/nginx/localhost-demo_cache-access.log  main;
+		error_log  /var/log/nginx/localhost-demo_cache-error.log;
+		try_files	$uri	$uri/  =404;
+    	        fastcgi_pass    127.0.0.1:9001;
+    	        fastcgi_index   index.php;
+    	        include         fastcgi_params;
+		set $prefix_fastcgi_name  $1;
+		if ($query_string != ""){ set $prefix_fastcgi_name $1?$query_string;}
+		
+		include	    /etc/nginx/conf.d/skip_cache_new;
+		fastcgi_cache_key "$scheme$request_method$host$request_uri";
+		fastcgi_cache_use_stale error timeout invalid_header http_500;
+		fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
+		
+		fastcgi_cache_bypass $skip_cache;
+		fastcgi_no_cache $skip_cache;
+		fastcgi_cache democache;
+		fastcgi_cache_valid  1m;
+
+	}
+....
+
+    location /123.html {
+	internal;
+	set  $memc_cmd $arg_cmd;
+        set $memc_key  $arg_key;
+        memc_pass 127.0.0.1:11211;
+
+    }
+
+
+}
+
+....
+}
+
+```
+
+### fastcgi_cache_path ###
+- /dev/shm/fastcgicache   **儲存cache的地方** 
+
+- levels=1:2     	  **設定目錄階層**
+
+```
+/dev/shm/fastcgicache
+|-- 1
+|   `-- a7
+|       `-- a5225f331f10bbe6099bfe0e48e82a71
+|-- 6
+|   `-- 8f
+`-- a
+    `-- fe
+```
+
+- keys_zone=democache:10m   				**為cache 空間設定名字為 democache , 此空間10MB  **
+
+- max_size=1000m					 **最大使用1G空間**
+
+- inactive=60s			   			**cache 1分鐘**
+
+### fastcgi_cache_key ###
+
+- 將 "$scheme$request_method$host$request_uri" 用MD5方法來 當作 hash key
+
+### fastcgi_cache ###
+
+- 指定 key_zone 名字為 democache
+
+- 參數: inactive  ,指在一段時間內文件沒被存取使用,就會被緩存管理器自動刪除。 ,預設 10m(10分鐘)
+
+
+### fastcgi_cache_valid ###
+
+指定接收到回應程式 的 http code 快取時間
+
+- fastcgi_cache_valid [http code ...] time;
+
+- 若只有指定時間。預設只有 http code  :200, 301, and 302 等回應狀態會被快取
+ex: 當Nginx 收到回應程式 http 狀態碼 200 時,就快取 1 小時
+
+### fastcgi_no_cache ###
+
+- 不等於空值 及 值不等於 0 都不被 cache。 **只要是 0 或 空值 就指定 cache**
+
+### fastcgi_cache_bypass ###
+
+- 不等於空值 及 值不等於 0 ,即是 不從cache區 回應資料給Client端,而是 By_Pass 到後端 。 **只要是 0 或 空值 就指定 cache**
+
+
 # 執行Nginx + lua 之前 需要了解的一些事 #
 
 ### 載入 lua 模組, 測試是否可以運作 ###
@@ -204,8 +300,40 @@ http{
 
 # 自行撰寫lua流程說明 
 
+* 先判斷是否有 帶 cookie ; 若沒帶 則 By_Pass 後端php-cgi處理
+
+* 再確定 cookie 是否有帶 "WEBSESSID=" 字串 ; 若沒帶 則 By_Pass 後端php-cgi處理
+
+* 有帶cookie , 利用(memcached API For Nginx) 讀取 cookie值
+
+* 確定cookie 值的內容 是否有帶登入資訊 ;若沒帶 則By_Pass 後端php-cgi處理
+
+* 有帶登入資訊, 是否為列表要cache 的對象 ; 若不是 則By_Pass 後端php-cgi處理
+
+
 # 簡單演示 及 問題說明 #
 
+## 演示 ##
+
+## 問題說明 ##
+
+- 說明背景:
+
+```
+http://220.229.227.26/other_sport/A0017_0050/om/ 
+http://220.229.227.26/other_sport/A0017_0050/wlb/
+兩個位址都在同一個DocumentRoot /var/www/html/other_sport/A0017_0050/
+兩個位址都在同一個Nginx設定檔中 /etc/nginx/conf.d/00-default.conf
+```
+
+- 產生問題執行:
+
+```
+用Firefox 瀏覽此url 並登入 http://220.229.227.26/other_sport/A0017_0050/om/
+執行設定會被cache的url http://220.229.227.26/other_sport/A0017_0050/om/league-listing.php (看 /var/log/nginx/localhost-demo_cache-access.log 是否有hit到,有被Hit到 就馬上執行第三步驟)
+用IE 瀏覽此url 並登入 http://220.229.227.26/other_sport/A0017_0050/wlb/
+再瀏覽此url http://220.229.227.26/other_sport/A0017_0050/om/league-listing.php,就發生未登入即可以抓取的到頁面。
+```
 
 
 # 參考資料 #
@@ -221,3 +349,8 @@ http{
  - [handler模組的掛載](https://github.com/chiamingyen/nginxProject/blob/master/nginxProject/source/chapter_3.rst)
 
  - [nginx與lua的執行順序和步驟說明](http://www.pylist.com/topic/1445510269)
+
+ - [Nginx API for Lua](https://github.com/openresty/lua-nginx-module#nginx-api-for-lua)
+
+ - [nil、null與ngx.null](http://www.pureage.info/2013/09/02/125.html)
+
