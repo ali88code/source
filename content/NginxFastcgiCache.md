@@ -19,6 +19,26 @@ title = "Nginx_Fastcgi_Cache + Lua 執行過程"
 
 ![Nginx_Fastcgi_Cache](images/nginx_Fastcgi_cache.jpeg "Nginx_Fastcgi_Cache")
 
+# Nginx Cache 運作流程 #
+
+Nginx 除了 work Process 管理 Http Request 請求等其他工作外,Nginx Cache 也由另外程序來作管理。
+
+*. Nginx Cache loader
+
+ - 主要Nginx 一開始初始化時,有呼叫Nginx Cache 相關模組,Nginx master process 會 fork Nginx Cache loader 去抓取 Nginx Cache Store(cache 儲存區),來重新建立索引(hash key)並存放在memory 中,
+	   建立完成後, Cache loader process 就隨即結束。
+
+*. Nginx Cache mamager
+
+ - 主要接受 master process 指令 去管理 Nginx Cache 大小事務,像是 Hash key 過期,或是搜尋 此筆資料是否存放在 cache 儲存區中 等工作。
+
+![Ngnx Cache運作流程](images/cache1-4_small.jpeg "Nginx_Cache")
+
+![Ngnx Cache Manager](images/60.26_master_worker_cachemanager_process.PNG "Nginx_Cache_Manager")
+
+
+
+
 
 # 參考資料 #
 
