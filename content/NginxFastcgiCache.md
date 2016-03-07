@@ -3,7 +3,7 @@ draft = true
 title = "Nginx_Fastcgi_Cache + Lua 執行過程"
 
 +++
-# Nginx Proxy Cache#
+# Nginx Proxy Cache #
 
  - 應用於Reverse Proxy,負載均衡
  - 作用是緩存後端服務器的內容，可能是任何內容，包括靜態的和動態
@@ -40,9 +40,9 @@ Nginx 除了 work Process 管理 Http Request 請求等其他工作外,Nginx Cac
 
 # 執行Nginx + lua 之前 需要了解的一些事 #
 
-1. 載入 lua 模組, 測試是否可以運作
+1.
 
-  1-1.
+  1-1. 載入 lua 模組, 測試是否可以運作
   
    ```
     dso{
@@ -106,17 +106,19 @@ Nginx 除了 work Process 管理 Http Request 請求等其他工作外,Nginx Cac
 
  2-2. Handers模組 精細處理 Http 請求 ,分成 11 個階段處理。下表所列處理階段分別依序處理
 
-:NGX_HTTP_POST_READ_PHASE:	讀取請求內容階段
-:NGX_HTTP_SERVER_REWRITE_PHASE:	Server請求位址重寫階段
-:NGX_HTTP_FIND_CONFIG_PHASE:	配置查找階段:
-:NGX_HTTP_REWRITE_PHASE:	Location請求位址重寫階段
-:NGX_HTTP_POST_REWRITE_PHASE:	請求位址重寫提交階段
-:NGX_HTTP_PREACCESS_PHASE:	訪問許可權檢查準備階段
-:NGX_HTTP_ACCESS_PHASE:		訪問許可權檢查階段
-:NGX_HTTP_POST_ACCESS_PHASE:	訪問許可權檢查提交階段
-:NGX_HTTP_TRY_FILES_PHASE:	配置項try_files處理階段  
-:NGX_HTTP_CONTENT_PHASE:	內容產生階段
-:NGX_HTTP_LOG_PHASE:	        日誌模組處理階段
+  Handers階段    |   說明
+  -------------  | -------------
+  NGX_HTTP_POST_READ_PHAS   | 	讀取請求內容階段
+  NGX_HTTP_SERVER_REWRITE_PHASE  | 	Server請求位址重寫階段
+  NGX_HTTP_FIND_CONFIG_PHASE   |	配置查找階段:
+  NGX_HTTP_REWRITE_PHASE   |	Location請求位址重寫階段
+  NGX_HTTP_POST_REWRITE_PHASE   |	請求位址重寫提交階段
+  NGX_HTTP_PREACCESS_PHASE   |	訪問許可權檢查準備階段
+  NGX_HTTP_ACCESS_PHASE   |		訪問許可權檢查階段
+  NGX_HTTP_POST_ACCESS_PHASE   |	訪問許可權檢查提交階段
+  NGX_HTTP_TRY_FILES_PHASE   |	配置項try_files處理階段  
+  NGX_HTTP_CONTENT_PHASE   |	內容產生階段
+  NGX_HTTP_LOG_PHASE   |	        日誌模組處理階段
 
 # ngx_http_memc_module.so 模組 #
 
@@ -195,7 +197,7 @@ http{
 
 
 
-# 自行撰寫lua流程說明 # 
+# 自行撰寫lua流程說明 
 
 # 簡單演示 及 問題說明 #
 
