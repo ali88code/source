@@ -40,9 +40,9 @@ Nginx 除了 work Process 管理 Http Request 請求等其他工作外,Nginx Cac
 
 # 執行Nginx + lua 之前 需要了解的一些事 #
 
-1.
+### 載入 lua 模組, 測試是否可以運作 ###
 
-  1-1. 載入 lua 模組, 測試是否可以運作
+  1-1.
   
    ```
     dso{
@@ -58,11 +58,13 @@ Nginx 除了 work Process 管理 Http Request 請求等其他工作外,Nginx Cac
     #nginx -t
     #/etc/init.d/nginx reload
    ```
+
    驗證lua 模組是否有載入
    
    ```sh
     #nginx -m
    ```
+
    ```
   	...
 	...
@@ -87,17 +89,19 @@ Nginx 除了 work Process 管理 Http Request 請求等其他工作外,Nginx Cac
 	..
 	}
   ``` 
-   
 
-
-
-2. Nginx hander處理模組將 http request 劃分11個階段來處理,及了解每個階段執行順序。
+### Nginx hander處理模組將 http request 劃分11個階段來處理,及了解每個階段執行順序。 ###
 
  2-1. 
-  - 先由Nginx核心 讀取 http Header 
+
+  - 先由Nginx核心 讀取 http Header
+
   - 根據Nginx設定檔,Nginx 核心 挑選一個Hander模組 處理 Http 請求 ,並將 http Header 交給 Hander 模組
+
   - 由Hander 模組 讀取 Http Body ,並處理好 Http 請求
+
   - Hander 模組處理Http 請求後,再 發送給 Fliters 模組處理。
+
   - Fliter 模組處理好後,再發送給客戶端
 
  
@@ -119,6 +123,7 @@ Nginx 除了 work Process 管理 Http Request 請求等其他工作外,Nginx Cac
   NGX_HTTP_TRY_FILES_PHASE   |	配置項try_files處理階段  
   NGX_HTTP_CONTENT_PHASE   |	內容產生階段
   NGX_HTTP_LOG_PHASE   |	        日誌模組處理階段
+
 
 # ngx_http_memc_module.so 模組 #
 
