@@ -27,3 +27,9 @@ title = "Nginx_Fastcgi_Cache + Lua 執行過程"
  - [Nginx Caching Tutorial - You Can Run Faster](http://czerasz.com/2015/03/30/nginx-caching-tutorial/) 
  
  - [Nginx的緩存：proxy_cache和fastcgi_cache](http://blog.angryfox.com/?p=1930)
+
+ - [Nginx模塊和請求處理流程簡介](http://281816327.blog.51cto.com/907015/1619920)
+
+ - [handler模組的掛載](https://github.com/chiamingyen/nginxProject/blob/master/nginxProject/source/chapter_3.rst)
+
+ - [nginx與lua的執行順序和步驟說明](http://www.pylist.com/topic/1445510269)
