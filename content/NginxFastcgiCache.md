@@ -100,10 +100,11 @@ server {
 ```
 
 - keys_zone=democache:10m   				**為cache 空間設定名字為 democache , 此空間10MB  **
+ - 10MB 是儲存在 share memory,,比較常存取(hot data)會被儲存在share memory
 
-- max_size=1000m					 **最大使用1G空間**
+- max_size=1000m					 **最大使用1G空間 ,是指定儲存cache的容量**
 
-- inactive=60s			   			**cache 1分鐘**
+- inactive=60s			   			**cache 1分鐘,預設值10分鐘**
 
 ### fastcgi_cache_key ###
 
@@ -124,6 +125,25 @@ server {
 
 - 若只有指定時間。預設只有 http code  :200, 301, and 302 等回應狀態會被快取
 ex: 當Nginx 收到回應程式 http 狀態碼 200 時,就快取 1 小時
+
+### fastcgi_cache_use_stale ###
+
+- 定義那些情況使用過期cache
+
+ - invalid_header  無效的回應
+ 
+ - error	   回應的Header 發生錯誤
+ 
+ - http_500	   回應500錯誤
+
+ - time		   當Nginx 與 Application 建立連接時,Nginx 等待 Application 回應超時
+
+
+### fastcgi_ignore_headers ###
+
+- 忽略 Http header 帶有 Cache-Control , Expires ,Set-Cookie 
+
+- 若從後端 Application回應 http header 帶有Cache-Control , Expires ,Set-Cookie 會影響fastcgi_cache 不會cache 回應資料
 
 ### fastcgi_no_cache ###
 
@@ -343,6 +363,8 @@ http://220.229.227.26/other_sport/A0017_0050/wlb/
  - [Nginx Caching Tutorial - You Can Run Faster](http://czerasz.com/2015/03/30/nginx-caching-tutorial/) 
  
  - [Nginx的緩存：proxy_cache和fastcgi_cache](http://blog.angryfox.com/?p=1930)
+
+ - [Nginx模塊fastcgi_cache的幾個注意點](https://www.cnxct.com/several-reminder-in-nginx-fastcgi_cache-and-php-session_cache_limiter/)
 
  - [Nginx模塊和請求處理流程簡介](http://281816327.blog.51cto.com/907015/1619920)
 
