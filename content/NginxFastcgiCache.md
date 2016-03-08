@@ -153,6 +153,16 @@ ex: 當Nginx 收到回應程式 http 狀態碼 200 時,就快取 1 小時
 
 - 不等於空值 及 值不等於 0 ,即是 不從cache區 回應資料給Client端,而是 By_Pass 到後端 。 **只要是 0 或 空值 就指定 cache**
 
+## $upstream_cache_status 包含以下幾種狀態 ##
+
+| 狀態     |      說明     |
+|----------|:-------------:|
+|MISS |未命中，請求被傳送到後端|
+|HIT |緩存命中|
+|EXPIRED |緩存已經過期請求被傳送到後端|
+|UPDATING |正在更新緩存，將使用舊的應答|
+|STALE |後端將得到過期的應答|
+|BYPASS |request會By_Pass到後端伺服器上,因為請求匹配了一個proxy_cache_bypass 或是 fastcgi_cache_bypass|
 
 # 執行Nginx + lua 之前 需要了解的一些事 #
 
@@ -350,7 +360,7 @@ http://220.229.227.26/other_sport/A0017_0050/wlb/
 
 ```
 用Firefox 瀏覽此url 並登入 http://220.229.227.26/other_sport/A0017_0050/om/
-執行設定會被cache的url http://220.229.227.26/other_sport/A0017_0050/om/league-listing.php (看 /var/log/nginx/localhost-demo_cache-access.log 是否有hit到,有被Hit到 就馬上執行第三步驟)
+執行設定會被cache的url http://220.229.227.26/other_sport/A0017_0050/om/league-listing.php (看 /var/log/nginx/localhost-demo_cache-access.log 是否有hit到,有被Hit到 就馬上執行下一個步驟)
 用IE 瀏覽此url 並登入 http://220.229.227.26/other_sport/A0017_0050/wlb/
 再瀏覽此url http://220.229.227.26/other_sport/A0017_0050/om/league-listing.php,就發生未登入即可以抓取的到頁面。
 ```
@@ -375,4 +385,3 @@ http://220.229.227.26/other_sport/A0017_0050/wlb/
  - [Nginx API for Lua](https://github.com/openresty/lua-nginx-module#nginx-api-for-lua)
 
  - [nil、null與ngx.null](http://www.pureage.info/2013/09/02/125.html)
-
